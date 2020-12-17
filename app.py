@@ -23,6 +23,8 @@ client = pymongo.MongoClient(mongo)
 db = client['recipe_app'] # Mongo collection
 users = db['users'] # Mongo document
 roles = db['roles'] # Mongo document
+categories = db['categories']
+recipes = db['recipes']
 
 
 login = LoginManager()
@@ -243,6 +245,13 @@ def admin_update_user(user_id):
 
 ##########  Recipes ##########
 
+
+@app.route('/recipes/recipes', methods=['GET', 'POST'])
+@login_required
+@roles_required('admin')
+def admin_recipes():
+    return render_template('recipe-admin.html', all_categories=categories.find(), all_recipes=recipes.find())
+
 @app.route('/recipes/new-recipe', methods=['GET'])
 @login_required
 @roles_required('admin', 'contributor')
@@ -255,8 +264,27 @@ def new_recipe():
 def add_recipe():
     return 'Add new recipe to database.'
 
-
-
-
 if __name__ == "__main__":
     app.run(debug=True)
+
+@app.route('/admin/delete-recipe/<recipe_id>', methods=['GET', 'POST'])
+@login_required
+@roles_required('contributor')
+def admin_delete_recipe(recipe_id):
+    delete_recipe = recipes.find_one({'_id': ObjectId(recipe_id)})
+    if delete_recipe:
+        recipes.delete_one(delete_recipe)
+        flash(delete_recipe['email'] + ' has been deleted.', 'warning')
+        return redirect(url_for('admin_recipes'))
+    flash('Recipe not found.', 'warning')
+    return redirect(url_for('admin_recipes'))
+
+@app.route('/admin/edit-recipe/<recipe_id>', methods=['GET', 'POST'])
+@login_required
+@roles_required('contributor')
+def admin_edit_recipe(recipe_id):
+    edit_recipe = recipes.find_one({'_id': ObjectId(user_id)})
+    if edit_recipes:
+        return render_template('edit-recipe.html', all_categories=categories.find(), all_recipes=recipes.find())
+    flash('Recipe not found.', 'warning')
+    return redirect(url_for('admin_recipes'))
