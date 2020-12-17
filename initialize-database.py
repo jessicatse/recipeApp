@@ -5,10 +5,11 @@ from dotenv import load_dotenv
 
 ## necessary for python-dotenv ##
 APP_ROOT = os.path.join(os.path.dirname(__file__), '..')   # refers to application_top
-dotenv_path = os.path.join(APP_ROOT, '.env')
-load_dotenv(dotenv_path)
+#dotenv_path = os.path.join(APP_ROOT, '.env')
+#load_dotenv(dotenv_path)
 
-mongo = os.getenv('MONGO')
+#mongo = os.getenv('MONGO')
+mongo = "mongodb+srv://jtse:B0liaAtlas@cluster0.upbc3.mongodb.net/recipe_app?retryWrites=true&w=majority"
 
 client = pymongo.MongoClient(mongo)
 
